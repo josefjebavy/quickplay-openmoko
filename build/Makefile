@@ -5,7 +5,7 @@ FILES=$(NAME)
 cilovyAdresar=/home/root/card/python/quickplay
 
 
-LASTVERSION=1.5-r3
+LASTVERSION=1.5-r3-touchbook
 IPKLAST=$(NAME)_$(LASTVERSION)_all.ipk
 DEPENDS="python-core  python-pygtk python-netclient"
 

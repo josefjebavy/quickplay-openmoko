@@ -40,16 +40,8 @@ import os
 import subprocess
 import pickle
 
-import dbus
-#dulezite pro loop
-if  getattr(dbus, "version", (0,0,0)) >= (0,41,0):
-    import dbus.glib
     
     
-dbus_interface = "org.freesmartphone.GSM.Call"
-signal_name = "CallStatus"
-path = "/org/freesmartphone/GSM/Device"
-bus_name = "org.freesmartphone.ogsmd"
     
 class _IdleObject(gobject.GObject):
   def __init__(self):
@@ -74,7 +66,6 @@ class mPlayer(threading.Thread, _IdleObject):
 	#create our control fifo, this is very important for proper functionality
     if not os.path.exists(os.path.expanduser("~/.qpf")):
       os.mkfifo(os.path.expanduser("~/.qpf"))
-    os.nice(-10)
     mplayerProcess = subprocess.Popen(("mplayer", "-nolirc", "-noconsolecontrols", "-nolirc", "-nojoystick", "-quiet", "-input", "file=" + os.path.expanduser("~/.qpf"), self.url))
     mplayerProcess.wait()
     self.emit("completed")
@@ -453,25 +444,6 @@ class quickPlayer:
 #---------------------------------
 
         
-  def call_pause(self, id, status, properties):
-        print " Signal CallStatus: ",status
-#        print id
-#        print status
-#        print properties
-        
-        if status == "incoming":
-            print " stop plaing"
-            self.stop(None)
-            #problem with bug: 2x incoming call signal
-            #pause only if it is plaing
-#            self.play_pause(None)
-
-#    * "incoming" = The call is incoming (but not yet accepted),
-#    * "outgoing" = The call is outgoing (but not yet established),
-#    * "active" = The call is the active call (you can talk),
-#    * "held" = The call is being held,
-#    * "release" = The call has been released.
-
   def __init__(self):
     gtk.gdk.threads_init()
 
@@ -666,19 +638,6 @@ class quickPlayer:
 
     self.window.show()
 
-#----------------------    
-   
-    bus   = dbus.SystemBus()
-    bus.add_signal_receiver(self.call_pause,
-                               signal_name, dbus_interface, bus_name, path)
-
-#    bus   = dbus.SystemBus()
-#    proxy = bus.get_object(bus_name, path)
-#    slHal = dbus.Interface(proxy, dbus_interface)
-#    slHal.connect_to_signal(signal_name,  self.call_pause)
-    
-
-#    gobject.MainLoop().run()
 
   def run(self):
     gtk.main()
